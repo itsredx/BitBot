@@ -5,8 +5,8 @@
             <video width="400" controls>
                 <source src="{{ post.video.url }}" type="video/mp4">
             </video>
-            <p>Caption: {{ post.caption }}</p>
-            <p>Timestamp: {{ post.timestamp }}</p>
+            <p>{{ post.caption }}</p>
+            <p>{{ post.timestamp }}</p>
         </li>
     {% endfor %}
 </ul>
