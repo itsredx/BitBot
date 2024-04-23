@@ -3,11 +3,11 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.mail import EmailMessage, send_mail
-from geeksforgeeks import settings
+#from geeksforgeeks import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.utils.encoding import force_bytes, force_text
+#from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth import authenticate, login, logout
 from . tokens import generate_token
 
@@ -48,10 +48,13 @@ def signup(request):
         myuser.first_name = fname
         myuser.last_name = lname
         # myuser.is_active = False
-        myuser.is_active = False
+        myuser.is_active = True
         myuser.save()
         messages.success(request, "Your Account has been created succesfully!! Please check your email to confirm your email address in order to activate your account.")
-        
+
+        return redirect('signin')
+
+        """
         # Welcome Email
         subject = "Welcome to BitBot!!"
         message = "Hello " + myuser.first_name + "!! \n" + "Welcome to BitBot!! \nThank you for visiting our website\n. We have also sent you a confirmation email, please confirm your email address. \n\nThanking You\nRed X"        
@@ -78,7 +81,8 @@ def signup(request):
         email.fail_silently = True
         email.send()
         
-        return redirect('signin')
+        
+        """
         
         
     return render(request, "loginsignup/signup.html")
@@ -107,7 +111,8 @@ def signin(request):
         username = request.POST['username']
         pass1 = request.POST['pass1']
         
-        user = authenticate(username=username, password=pass1)
+        user = authenticate(username=username , password=pass1)
+       
         
         if user is not None:
             login(request, user)
