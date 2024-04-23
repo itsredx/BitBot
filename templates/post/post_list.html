@@ -1,0 +1,12 @@
+<h1>Posts</h1>
+<ul>
+    {% for post in posts %}
+        <li>
+            <video width="400" controls>
+                <source src="{{ post.video.url }}" type="video/mp4">
+            </video>
+            <p>Caption: {{ post.caption }}</p>
+            <p>Timestamp: {{ post.timestamp }}</p>
+        </li>
+    {% endfor %}
+</ul>
