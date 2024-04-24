@@ -10,6 +10,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 #from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth import authenticate, login, logout
 from . tokens import generate_token
+from user.models import Profile
 
 # Create your views here.
 def home(request):
@@ -50,6 +51,11 @@ def signup(request):
         # myuser.is_active = False
         myuser.is_active = True
         myuser.save()
+        # Create a profile instance for the user
+        if not Profile.objects.filter(user=myuser).exists():
+            profile = Profile(user=myuser)
+            profile.save()
+        
         messages.success(request, "Your Account has been created succesfully!! Please check your email to confirm your email address in order to activate your account.")
 
         return redirect('signin')
