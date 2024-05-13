@@ -25,6 +25,7 @@
     <h4>You're successfully logged in.</h4>
     <button type="submit"><a href="/signout/">SignOut</a></button>
     <button type="submit"><a href="{% url 'profile_view' %}">Profile</a></button>
+    <button type="submit"><a href="{% url 'all_posts' %}">Posts</a></button>
     {% else %}
     <button type="submit"><a href="/signup/">SignUp</a></button>
     <br/>
