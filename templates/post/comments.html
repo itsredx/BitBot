@@ -1,0 +1,14 @@
+<h2>Comments</h2>
+<ul>
+    {% for comment in comments %}
+        <li>
+            <p>{{ comment.user.username }}: {{ comment.content }}</p>
+            <p>{{ comment.timestamp }}</p>
+        </li>
+    {% endfor %}
+</ul>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Comment</button>
+</form>

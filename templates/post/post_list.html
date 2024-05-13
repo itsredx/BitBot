@@ -1,12 +1,104 @@
-<h1>Posts</h1>
-<ul>
-    {% for post in posts %}
-        <li>
-            <video width="400" controls>
-                <source src="{{ post.video.url }}" type="video/mp4">
-            </video>
-            <p>{{ post.caption }}</p>
-            <p>{{ post.timestamp }}</p>
-        </li>
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+  {% for post in posts %}
+  <div class="post">
+    <video width="400" controls>
+      <source src="{{ post.video.url }}" type="video/mp4">
+  </video>
+  <p><strong>{{ post.user.username }}:</strong> {{ post.caption }}</p>
+  <p>{{ post.timestamp }}</p>
+    <button data-post-id="{{ post.id }}" class="like-btn">Like ({{ post.like_set.count }})</button>
+    {% for comment in post.comments.all %}
+    <p><strong>{{ comment.user.username }}:</strong> {{ comment.content }}</p>
+    <p>{{ comment.timestamp }}</p>
     {% endfor %}
-</ul>
+
+    <form method="POST" class="comment-form">
+      {% csrf_token %}
+      <textarea name="comment_text" placeholder="Add a comment..."></textarea>
+      <input type="hidden" name="comment_post_id" value="{{ post.id }}">
+      <button type="submit">Comment</button>
+    </form>
+  </div>
+  {% endfor %}
+
+  <script>
+    $(document).ready(function () {
+      // Like button click handler
+      $('.like-btn').click(function () {
+        var likeButton = $(this);
+        var postId = likeButton.data('postId');
+
+        $.ajax({
+          url: 'http://localhost:8000/post',  // Use the same view URL
+          type: 'POST',
+          data: { like_post_id: postId },
+
+          beforeSend: function (xhr) {
+            const csrftoken1 = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            xhr.setRequestHeader('X-CSRFToken', csrftoken1);
+          },
+
+          success: function (response) {
+            if (response.success) {
+              likeButton.text(`Like (${response.like_count})`);  // Update like count
+              // Optionally add visual feedback (like animation)
+            } else {
+              // Handle already liked scenario (optional)
+            }
+          },
+          error: function (error) {
+            console.error("Like error:", error);
+            // Handle like errors
+          }
+        });
+      });
+
+      // Comment form submission handler
+      $('.comment-form').submit(function (event) {
+        event.preventDefault();  // Prevent default form submission
+
+        var form = $(this);
+        var commentText = form.find('textarea').val().trim();
+        var postId = form.find('input[name="comment_post_id"]').val();
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        if (commentText) {
+          $.ajax({
+            url: 'http://localhost:8000/post',  // Use the same view URL
+            type: 'POST',
+            data: { comment_text: commentText, comment_post_id: postId },
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader('X-CSRFToken', csrftoken);
+            },
+
+            success: function (response) {
+              if (response.success) {
+                // Create and append the new comment to the DOM
+                var newComment = $('<p></p>').text(`${response.username}: ${commentText}`);
+                form.parent().find('.post').append(newComment);
+                form.find('textarea').val('');  // Clear comment textarea
+                console.log(newComment);
+              } else {
+                // Handle comment creation failure
+              }
+            },
+
+            error: function (error) {
+              console.error("Comment error:", error);
+              // Handle comment errors
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

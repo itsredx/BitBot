@@ -1,0 +1,7 @@
+.comments-panel {
+  display: none;
+}
+
+.toggle-comments:hover + .comments-panel {
+  display: block;
+}
